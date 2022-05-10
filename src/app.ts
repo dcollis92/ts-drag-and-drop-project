@@ -59,7 +59,41 @@ function autobind(_: any, _2: string, descriptor: PropertyDescriptor) {
   return adjDescriptor;
 }
 
-//ProjectInput Class
+// ProjectList Class
+class ProjectList {
+  templateElement: HTMLTemplateElement;
+  hostElement: HTMLDivElement;
+  element: HTMLElement;
+
+  constructor(private type: "active" | "finished") {
+    this.templateElement = document.getElementById(
+      "project-list"
+    )! as HTMLTemplateElement;
+    this.hostElement = document.getElementById("app")! as HTMLDivElement;
+
+    const importedNode = document.importNode(
+      this.templateElement.content,
+      true
+    );
+    this.element = importedNode.firstElementChild as HTMLElement;
+    this.element.id = `${this.type}-projects`;
+    this.attach();
+    this.renderContent();
+  }
+
+  private renderContent() {
+    const listId = `${this.type}-projects-list`;
+    this.element.querySelector("ul")!.id = listId;
+    this.element.querySelector("h2")!.textContent =
+      this.type.toUpperCase() + " PROJECTS";
+  }
+
+  private attach() {
+    this.hostElement.insertAdjacentElement("beforeend", this.element);
+  }
+}
+
+// ProjectInput Class
 class ProjectInput {
   templateElement: HTMLTemplateElement;
   hostElement: HTMLDivElement;
@@ -102,19 +136,19 @@ class ProjectInput {
 
     const titleValidatable: Validatable = {
       value: enteredTitle,
-      required: true
-    }
+      required: true,
+    };
     const descriptionValidatable: Validatable = {
       value: enteredDescription,
       required: true,
-      minLength: 5
-    }
+      minLength: 5,
+    };
     const peopleValidatable: Validatable = {
       value: +enteredPeople,
       required: true,
       min: 1,
-      max: 5
-    }
+      max: 5,
+    };
 
     if (
       !validate(titleValidatable) ||
@@ -155,25 +189,30 @@ class ProjectInput {
 }
 
 const prjInput = new ProjectInput();
+const activePrjList = new ProjectList('active');
+const finishedPrjList = new ProjectList('finished');
+
 
 // -------- INTERACTING WITH DOM ELEMENTS ---------  \\
-// line 39 added to identify element id
 // line 24-26 added new elements
 // line 41-49 attach id to elements
 // line 60 configure method
 
 // ---- CREATING & USING AN AUTOBIND DECORATOR ----  \\
-// line 2 added autobind function
+// line 2 added Autobind function
 
 // ------------- FETCHING USER INPUT --------------  \\
 // line 55 gatherUserInput function
-// line 56 if check for valid input
+// line 153 if check for valid input
 
 // - CREATING A RE-USABLE VALIDATION FUNCTIONALITY -  \\
 // line 2 Validatable interface
-// line 11 validate function
+// line 12 validate function
+// line 153 adjust valid if check
 
 // ----------- RENDERING PROJECT LISTS ------------  \\
+//line # private render content fn
+
 // --- MANAGING APPLICATION STATE w SINGLETONS ----  \\
 // --------- MORE CLASSES & CUSTOM TYPES ----------  \\
 // --------- FILTERING PROJECT WITH ENUMS ---------  \\
