@@ -1,6 +1,22 @@
 // ---- DOM ELEMENT SELECTION & OOP RENDERING -----  \\
-// -------- INTERACTING WITH DOM ELEMENTS ---------  \\
+// autobind
+function autobind(
+  _: any,
+  _2: string,
+  descriptor: PropertyDescriptor
+) {
+  const originalMethod = descriptor.value;
+  const adjDescriptor: PropertyDescriptor = {
+    configurable: true,
+    get() {
+      const boundFn = originalMethod.bind(this);
+      return boundFn;
+    }
+  }
+  return adjDescriptor;
+}
 
+//ProjectInput Class
 class ProjectInput {
   templateElement: HTMLTemplateElement;
   hostElement: HTMLDivElement;
@@ -53,13 +69,13 @@ class ProjectInput {
 const prjInput = new ProjectInput();
 
 // -------- INTERACTING WITH DOM ELEMENTS ---------  \\
+// line 2 added autobind function
 // line 23 added to identify element id
 // line 8-10 added new elements
 // line 25-33 attach id to elements
 // line 44 configure method
 
 // ---- CREATING & USING AN AUTOBIND DECORATOR ----  \\
-
 
 // ------------- FETCHING USER INPUT --------------  \\
 // -- CREATING A RE-USABLE VALIDATION FUNCTIONALITY --  \\
