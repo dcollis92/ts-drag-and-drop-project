@@ -1,18 +1,17 @@
 // ---- DOM ELEMENT SELECTION & OOP RENDERING -----  \\
-// autobind
-function autobind(
-  _: any,
-  _2: string,
-  descriptor: PropertyDescriptor
-) {
+// Validation
+
+
+// autobind decorator
+function autobind(_: any, _2: string, descriptor: PropertyDescriptor) {
   const originalMethod = descriptor.value;
   const adjDescriptor: PropertyDescriptor = {
     configurable: true,
     get() {
       const boundFn = originalMethod.bind(this);
       return boundFn;
-    }
-  }
+    },
+  };
   return adjDescriptor;
 }
 
@@ -52,13 +51,42 @@ class ProjectInput {
     this.attach();
   }
 
+  private gatherUserInput(): [string, string, number] | void {
+    const enteredTitle = this.titleInputElement.value;
+    const enteredDescription = this.descriptionInputElement.value;
+    const enteredPeople = this.peopleInputElement.value;
+
+    if (
+      validate({value: enteredTitle, required: true, minLength: 5}) &&
+      validate({value: enteredDescription, required: true, minLength: 5}) &&
+      validate({value: enteredPeople, required: true, minLength: 5})
+    ) {
+      alert("Invalid input, please try again!");
+      return;
+    } else {
+      return [enteredTitle, enteredDescription, +enteredPeople];
+    }
+  }
+
+  private clearInputs() {
+    this.titleInputElement.value = "";
+    this.descriptionInputElement.value = "";
+    this.peopleInputElement.value = "";
+  }
+
+  @autobind
   private submitHandler(event: Event) {
     event.preventDefault();
-    console.log(this.titleInputElement.value);
+    const userInput = this.gatherUserInput();
+    if (Array.isArray(userInput)) {
+      const [title, desc, people] = userInput;
+      console.log(title, desc, people);
+      this.clearInputs();
+    }
   }
 
   private configure() {
-    this.element.addEventListener("submit", this.submitHandler.bind(this));
+    this.element.addEventListener("submit", this.submitHandler);
   }
 
   private attach() {
@@ -69,13 +97,25 @@ class ProjectInput {
 const prjInput = new ProjectInput();
 
 // -------- INTERACTING WITH DOM ELEMENTS ---------  \\
-// line 2 added autobind function
-// line 23 added to identify element id
-// line 8-10 added new elements
-// line 25-33 attach id to elements
-// line 44 configure method
+// line 39 added to identify element id
+// line 24-26 added new elements
+// line 41-49 attach id to elements
+// line 60 configure method
 
 // ---- CREATING & USING AN AUTOBIND DECORATOR ----  \\
+// line 2 added autobind function
 
 // ------------- FETCHING USER INPUT --------------  \\
-// -- CREATING A RE-USABLE VALIDATION FUNCTIONALITY --  \\
+// line 55 gatherUserInput function
+// line 56 if check for valid input
+
+// - CREATING A RE-USABLE VALIDATION FUNCTIONALITY -  \\
+
+
+// ----------- RENDERING PROJECT LISTS ------------  \\
+// --- MANAGING APPLICATION STATE w SINGLETONS ----  \\
+// --------- MORE CLASSES & CUSTOM TYPES ----------  \\
+// --------- FILTERING PROJECT WITH ENUMS ---------  \\
+// -------- ADDING INHERITANCE & GENERICS ---------  \\
+// ---- RENDERING PROJECTS ITEMS WITH A CLASS -----  \\
+// ---------------- USING A GETTER ----------------  \\
