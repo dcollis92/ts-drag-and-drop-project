@@ -21,8 +21,8 @@ type Listener = (items: Project[]) => void;
 // don't need a return type, just need Listener to expect items being passed through
 
 class ProjectState {
-  private listeners: Listener[] = []; 
-  private projects: Project[] = []; 
+  private listeners: Listener[] = [];
+  private projects: Project[] = [];
   private static instance: ProjectState;
 
   private constructor() {}
@@ -138,7 +138,13 @@ class ProjectList {
     this.element.id = `${this.type}-projects`;
 
     projectState.addListener((projects: Project[]) => {
-      this.assignedProjects = projects;
+      const relevantProjects = projects.filter((prj) => {
+        if (this.type === "active") {
+          return prj.status === ProjectStatus.Active;
+        }
+        return prj.status === ProjectStatus.Finished;
+      });
+      this.assignedProjects = relevantProjects;
       this.renderProjects();
     });
 
@@ -150,6 +156,7 @@ class ProjectList {
     const listEl = document.getElementById(
       `${this.type}-projects-list`
     )! as HTMLUListElement;
+    listEl.innerHTML = "";
     for (const prjItem of this.assignedProjects) {
       const listItem = document.createElement("li");
       listItem.textContent = prjItem.title;
@@ -298,6 +305,8 @@ const finishedPrjList = new ProjectList("finished");
 // add Project type
 
 // --------- FILTERING PROJECT WITH ENUMS ---------  \\
+// if block for ProjectStatus.Active or ProjectStatus.Finished
+
 // -------- ADDING INHERITANCE & GENERICS ---------  \\
 // ---- RENDERING PROJECTS ITEMS WITH A CLASS -----  \\
 // ---------------- USING A GETTER ----------------  \\
