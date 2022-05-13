@@ -65,8 +65,20 @@ class ProjectState extends State<Project> {
       ProjectStatus.Active
     );
     this.projects.push(newProject);
+    this.updateListeners();
+  }
+
+  moveProject(projectId: string, newStatus: ProjectStatus) {
+    const project = this.projects.find((prj) => prj.id === projectId);
+    if (project && project.status !== newStatus) {
+      project.status = newStatus;
+      this.updateListeners();
+    }
+  }
+
+  private updateListeners() {
     for (const listenerFn of this.listeners) {
-      listenerFn(this.projects.slice()); // why slice and not the spread operator?
+      listenerFn(this.projects.slice());
     }
   }
 }
@@ -197,8 +209,8 @@ class ProjectItem
 
   @autobind
   dragStartHandler(event: DragEvent) {
-    event.dataTransfer!.setData('text/plain', this.project.id);
-    event.dataTransfer!.effectAllowed = 'move';
+    event.dataTransfer!.setData("text/plain", this.project.id);
+    event.dataTransfer!.effectAllowed = "move";
     // lets the browser know we are allowing the data to move
   }
 
@@ -235,7 +247,7 @@ class ProjectList
 
   @autobind
   dragOverHandler(event: DragEvent) {
-    if (event.dataTransfer && event.dataTransfer.types[0] === 'text/plain'){
+    if (event.dataTransfer && event.dataTransfer.types[0] === "text/plain") {
       event.preventDefault();
       // default for JS is to not allow drag & drop
       // preventing default allows you to break this rule
@@ -244,8 +256,13 @@ class ProjectList
     }
   }
 
+  @autobind
   dropHandler(event: DragEvent) {
-    console.log(event)
+    const prjId = event.dataTransfer!.getData("text/plain");
+    projectState.moveProject(
+      prjId,
+      this.type === "active" ? ProjectStatus.Active : ProjectStatus.Finished
+    );
   }
 
   @autobind
@@ -423,4 +440,8 @@ const finishedPrjList = new ProjectList("finished");
 // add dataTransfer event to DragStartHandler
 
 // ------------- FINISHING DRAG & DROP -------------  \\
+// add moveProject to Project Status
+// create updateListeners Fn to reuse code in addProject and moveProject
+// moveProject adjusted to reflect adjusting status only if moved
+
 // -------------------- WRAP UP --------------------  \\
