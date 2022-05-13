@@ -197,7 +197,9 @@ class ProjectItem
 
   @autobind
   dragStartHandler(event: DragEvent) {
-    console.log(event);
+    event.dataTransfer!.setData('text/plain', this.project.id);
+    event.dataTransfer!.effectAllowed = 'move';
+    // lets the browser know we are allowing the data to move
   }
 
   dragEndHandler(_: DragEvent) {
@@ -232,12 +234,19 @@ class ProjectList
   }
 
   @autobind
-  dragOverHandler(_: DragEvent) {
-    const listEl = this.element.querySelector("ul")!;
-    listEl.classList.add("droppable");
+  dragOverHandler(event: DragEvent) {
+    if (event.dataTransfer && event.dataTransfer.types[0] === 'text/plain'){
+      event.preventDefault();
+      // default for JS is to not allow drag & drop
+      // preventing default allows you to break this rule
+      const listEl = this.element.querySelector("ul")!;
+      listEl.classList.add("droppable");
+    }
   }
 
-  dropHandler(_: DragEvent) {}
+  dropHandler(event: DragEvent) {
+    console.log(event)
+  }
 
   @autobind
   dragLeaveHandler(_: DragEvent) {
@@ -411,5 +420,7 @@ const finishedPrjList = new ProjectList("finished");
 // not droppable yet
 
 // ------------ ADDING A DROPPABLE AREA ------------  \\
+// add dataTransfer event to DragStartHandler
+
 // ------------- FINISHING DRAG & DROP -------------  \\
 // -------------------- WRAP UP --------------------  \\
